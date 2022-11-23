@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" type="text/css" href="index.css">
+	<link href="img/icon.png" rel="icon" sizes="192x192">
+	<title>Samaritan</title>
+	<script defer src="js/cookie.js"></script>
+	<script defer src="js/visibility.js"></script>
+	<script defer src="js/index.js"></script>
+	<script defer src="js/processing.js"></script>
+</head>
+<body>
+	<div id="loadingWrapper">
+		<div id="progress">
+			<span>LOADING</span><span class="cursor blink">_</span>
+			<span class="details"></span>
+			<div class="barContainer">
+				<div class="bar"></div>
+			</div>
+		</div>
+
+		<p id="status"></p>
+
+		<div class="LW _l">
+			<img src="img/loadingWrapper_left.png">
+		</div>
+		<div class="LW _r">
+			<img src="img/loadingWrapper_right.png">
+		</div>
+	</div>
+
+	<div id="main">
+		<p id="output">&nbsp;</p>
+		<hr id="hr">
+		<p id="marker" class="triangle"></p>
+	</div>
+
+	<div id="left">
+		<!---->
+	</div>
+	<div id="right">
+		<!---->
+	</div>
+
+	<div id="executive">
+		<span N="1" class="item green">UI</span>
+		<span N="2" class="item green">ASSETS</span>
+		<span N="3" class="item yellow">FUNCTIONS</span>
+		<span N="4" class="item red">CHATBOT</span>
+		<span N="#" class="item red">PROCESSING</span>
+		<span N="#" class="item yellow">MEMORY</span>
+		<span N="#" class="item green">HEURISTICS</span>
+		<span N="#" class="item yellow">ENGINEERING</span>
+	</div>
+
+	<div id="bottom">
+		<div id="cmd" contenteditable="false">
+			<span contenteditable="true"></span>
+			<input id="submit" type="submit" value="exec">
+			<div id="cursor" class="blink"></div>
+		</div>
+
+		<p id="copyright">Samaritan <span class="version"></span> | Ask for <span style="color: red;">HELP</span></p>
+	</div>
+	<script>
+		let status = 0;
+		let recognition = new webkitSpeechRecognition();
+		recognition.continuous = true;
+		recognition.interimResults = true;
+		recognition.lang = 'en-US';
+		recognition.onresult = event => {
+			let result = event.results[event.results.length - 1];
+			let sentence = result[0].transcript;
+			nlp(sentence, [], result.isFinal);
+		};
+		recognition.onerror = err => {
+			if(err.error !== 'no-speech'){}
+			switch(err.error){
+				case 'network':
+					status = 2;
+					alert(`Voice recongition won't work unless you use Google's official Chrome browser.`);
+					break;
+				case 'no-speech':
+					break;
+				default:
+					console.log(err);
+			}
+		};
+		recognition.onend = () => { if(status === 1) recognition.start(); };
+		recognition.onstart = () => {
+			if(status === 1) return;
+			status = 1;
+			wrapper.init();
+		};
+		recognition.start();
+	</script>
+</body>
+</html>
